@@ -1,4 +1,4 @@
-## Python Multi Thread Crawler
+## Python Multi Thread Web Crawler
 
 Sample code
 
