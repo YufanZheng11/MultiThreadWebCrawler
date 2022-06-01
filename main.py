@@ -10,6 +10,7 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(threadName)s %(me
 class HtmlParser:
 
     def getUrls(self, url):
+        """ Get all urls of given url page """
         http = httplib2.Http()
         status, response = http.request(url)
         urls = []
@@ -21,7 +22,7 @@ class HtmlParser:
 
 class Crawler:
 
-    def __init__(self, startUrl, maxCrawls=16):
+    def __init__(self, startUrl, numThreads=4, maxCrawls=16):
         self._htmlParser = HtmlParser()
         self._startUrlHostName = urlparse(startUrl).hostname
         self._queue = [startUrl]
@@ -30,11 +31,12 @@ class Crawler:
         self._cv = threading.Condition(self._lock)
         self._numActiveThreads = 0
         self._done = False
+        self._numThreads = numThreads
         self._maxCrawls = maxCrawls
 
     def crawl(self):
         threads = []
-        for _ in range(4):
+        for _ in range(self._numThreads):
             thread = threading.Thread(target=self._crawl)
             threads.append(thread)
             thread.start()
@@ -73,5 +75,5 @@ class Crawler:
 
 
 if __name__ == '__main__':
-    c = Crawler('http://www.nytimes.com')
+    c = Crawler(startUrl='http://www.nytimes.com')
     c.crawl()
